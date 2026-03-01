@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anniversary Special</title>
+<style>
+  body, html {
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Background animasi */
+  body {
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4, #ffdde1);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: #fff;
+  }
+
+  @keyframes gradientBG {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+
+  /* Container tiap halaman */
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+  }
+
+  h1 { font-size: 3rem; text-shadow: 2px 2px 4px #000; }
+
+  /* Halaman 2: galeri */
+  .gallery {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .gallery img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    transition: transform 0.3s;
+  }
+  .gallery img:hover { transform: scale(1.1); }
+
+  /* Halaman 3: hiasan gerak */
+  .decor {
+    position: relative;
+    width: 100%; height: 200px;
+    margin: 20px 0;
+  }
+  .heart {
+    position: absolute;
+    width: 30px; height: 30px;
+    background: red;
+    clip-path: polygon(50% 0%, 61% 12%, 75% 12%, 88% 25%, 88% 38%, 75% 50%, 50% 75%, 25% 50%, 12% 38%, 12% 25%, 25% 12%, 39% 12%);
+    animation: floatHeart 5s infinite;
+  }
+  @keyframes floatHeart {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-100px) rotate(180deg); }
+    100% { transform: translateY(0px) rotate(360deg); }
+  }
+
+  /* Halaman 4: komentar */
+  .comment-box { margin-top: 20px; }
+  .comment-box input {
+    padding: 10px;
+    width: 300px;
+    border-radius: 8px;
+    border: none;
+    margin-right: 10px;
+  }
+  .comment-box button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ff6b81;
+    color: #fff;
+    cursor: pointer;
+  }
+  .comments {
+    margin-top: 20px;
+    max-width: 400px;
+    text-align: left;
+  }
+  .comment-item {
+    background: rgba(255,255,255,0.2);
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+  }
+
+  /* Navigasi */
+  .nav-btn {
+    position: fixed;
+    bottom: 20px;
+    font-size: 2rem;
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 50px; height: 50px;
+    cursor: pointer;
+  }
+  #prev { left: 20px; }
+  #next { right: 20px; }
+</style>
+</head>
+<body>
+
+<!-- Musik background -->
+<audio id="bgMusic" src="musik_anniversary.mp3" autoplay loop></audio>
+
+<!-- Halaman 1 -->
+<div class="page" id="page1">
+  <h1>Selamat 1 Tahun Bersama Sayang💖</h1>
+</div>
+
+<!-- Halaman 2 -->
+<div class="page" id="page2" style="display:none;">
+  <h2>Momen Kita Bersama</h2>
+  <div class="gallery">
+    <img src="firstdate.jpg" alt="Foto 1">
+    <img src="firstdate.png" alt="Foto 2">
+    <img src="fotomoment.jpg" alt="Foto 3">
+  </div>
+</div>
+
+<!-- Halaman 3 -->
+<div class="page" id="page3" style="display:none;">
+  <h2>Pesan Spesial</h2>
+  <p>Kamu adalah bagian terindah dalam hidupku. Semoga kita selalu bersama dan bahagia selamanya Terima kasih sudah bertahan sejauh ini, terima kasih sudah sabar menghadapi aku dengan segala kurangnya. Semoga hubungan ini makin dewasa, makin kuat, dan makin penuh cinta. Semoga kita selalu jadi rumah satu sama lain. Dari sekadar saling sapa, sampai jadi saling cerita setiap hari. Terima kasih sudah hadir dan tetap memilih aku. Semoga langkah kita selalu searah, dan doa kita selalu saling menguatkan🤍💕</p>
+  <div class="decor" id="decor"></div>
+</div>
+
+<!-- Halaman 4 -->
+<div class="page" id="page4" style="display:none;">
+  <h2>Pesan Untukku</h2>
+  <div class="comment-box">
+    <input type="text" id="commentInput" placeholder="Tulis komentarmu...">
+    <button onclick="postComment()">Post</button>
+  </div>
+  <div class="comments" id="commentsList"></div>
+</div>
+
+<!-- Navigasi -->
+<button class="nav-btn" id="prev">&#10094;</button>
+<button class="nav-btn" id="next">&#10095;</button>
+
+<script>
+let currentPage = 1;
+const totalPages = 4;
+
+document.getElementById('prev').addEventListener('click', () => {
+  currentPage = currentPage > 1 ? currentPage - 1 : totalPages;
+  showPage(currentPage);
+});
+document.getElementById('next').addEventListener('click', () => {
+  currentPage = currentPage < totalPages ? currentPage + 1 : 1;
+  showPage(currentPage);
+});
+
+function showPage(n) {
+  for(let i=1; i<=totalPages; i++){
+    document.getElementById('page'+i).style.display = 'none';
+  }
+  document.getElementById('page'+n).style.display = 'flex';
+}
+
+// Hiasan bergerak di halaman 3
+const decor = document.getElementById('decor');
+for(let i=0; i<10; i++){
+  let heart = document.createElement('div');
+  heart.className = 'heart';
+  heart.style.left = Math.random()*100 + '%';
+  heart.style.animationDelay = (Math.random()*5)+'s';
+  decor.appendChild(heart);
+}
+
+// Fungsi komentar
+function postComment() {
+  const input = document.getElementById('commentInput');
+  const value = input.value.trim();
+  if(value){
+    const div = document.createElement('div');
+    div.className = 'comment-item';
+    div.textContent = value;
+    document.getElementById('commentsList').appendChild(div);
+    input.value = '';
+  }
+}
+</script>
+
+</body>
+</html>
